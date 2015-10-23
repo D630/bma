@@ -93,18 +93,20 @@ __bma ()
         -h)
                 { builtin typeset help="$(</dev/fd/0)" ; } <<'HELP'
 Usage
-        __bma -[acdihlps]
+        __bma -[acdhilps]
 
 Options
-        -a PATHNAME BMARK       Add bookmark and update index file.
-        -c BMARK                Cd into bookmark.
-        -d BMARK                Remove boomark from the index file.
-        -h                      Print this help.
-        -i                      Initialize index file.
-        -l                      Execute 'hash' and filter bookmarks.
-        -p                      Print all pathnames and bookmarks.
+        -a PATHNAME BMARK       Add bookmark and update index file
+        -c BMARK                Cd into bookmarked directory
+        -d BMARK                Remove boomark from the index file
+        -h                      Print help
+        -i                      Initialize index file
+        -l                      Execute 'hash' and filter bookmarks
+        -p                      Print all pathnames and bookmarks
         -s                      Select bookmarks via the select compound command
-                                of GNU bash.
+                                of GNU bash
+Environment variables
+        BMARKS_INDEX_FILE       default: ${$XDG_DATA_HOME}/bmarks.txt
 HELP
                 builtin printf '%s\n' "$help"
         ;;
