@@ -41,7 +41,7 @@ __bma ()
                         if
                                 builtin cd -- "${b%/.BMARKS}"
                         then
-                                builtin printf '%s\n' "$PWD" 1>&2
+                                builtin printf 'cd -- %s\n' "$PWD" 1>&2
                         else
                                 builtin printf 'error: could not cd into %s\n' "$2" 1>&2
                         fi
@@ -124,7 +124,7 @@ bcd ()
         if
                 [[ -d $dir ]]
         then
-                builtin cd -- "$dir" && builtin printf '%s\n' "$PWD" 1>&2
+                builtin cd -- "$dir" && builtin printf 'cd -- %s\n' "$PWD" 1>&2
         else
                 builtin printf '%s\n' "no dir has been chosen" 1>&2
                 builtin return 1
