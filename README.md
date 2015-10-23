@@ -26,7 +26,7 @@ git checkout $(git describe --abbrev=0 --tags)
 Put the following to your `~/.bashrc`:
 
 ```
-source FILENAME/OF/BMA && __bma -i
+source FILENAME/OF/bma.bash && __bma -i
 ```
 
 The above line will setup:
@@ -41,47 +41,47 @@ bcd makes use of [fzf](https://github.com/junegunn/fzf). Modify it, when you do 
 ##### USAGE
 
 ```
-__bma -[acdihlps]
+__bma -[acdhilps]
 ```
 
 ###### ENVIRONMENT VARIABLES
 
 ```
-BMARKS_INDEX_FILE       ${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt}
+BMARKS_INDEX_FILE       default: ${XDG_DATA_HOME}/bmarks.txt
 ```
 
 ###### OPTIONS
 
 ```
--a PATHNAME BMARK       Add bookmark and update index file.
--c BMARK                Cd into bookmark.
--d BMARK                Remove boomark from the index file.
--h                      Print this help.
--i                      Initialize index file.
--l                      Execute 'hash' and filter bookmarks.
--p                      Print all pathnames and bookmarks.
+-a PATHNAME BMARK       Add bookmark and update index file
+-c BMARK                Cd into bookmarked directory
+-d BMARK                Remove boomark from the index file
+-h                      Print help
+-i                      Initialize index file
+-l                      Execute 'hash' and filter bookmarks
+-p                      Print all pathnames and bookmarks
 -s                      Select bookmarks via the select compound
-                        command of GNU bash.
+                        command of GNU bash
 ```
 
 ###### EXAMPLES
 
 ```sh
-@ cd $HOME
-@ bma -a $PWD home
+% cd $HOME
+% bma -a $PWD home
 added '/home/user1' as 'home'
-@ cd / && echo $PWD
+% cd / && echo $PWD
 /
-@ bb home
+% bb home
 /home/user1
-@ bma -p
+% bma -p
 /home/user1 home
-@ cd /
-@ bms
+% cd /
+% bms
 1) home
 cd -- 1
 /home/user1
-@ bma -d home
+% bma -d home
 index file seems to be empty now
 ```
 
