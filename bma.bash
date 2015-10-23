@@ -22,15 +22,15 @@ __bma ()
                                         builtin hash -l \
                                         | command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE"
                                 then
-                                        builtin printf '%s\n' "added '$2' as '$3'" 1>&2
+                                        builtin printf 'added %s as %s \n' "$2" "$3" 1>&2
                                 else
                                         builtin printf '%s\n' "error: could not update index file" 1>&2
                                 fi
                         else
-                                builtin printf '%s\n' "error: could not add '$3'" 1>&2
+                                builtin printf 'error: could not add %s\n' "$3" 1>&2
                         fi
                 else
-                        builtin printf '%s\n' "error: bad arguments: '$*'" 1>&2
+                        builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
                 fi
         ;;
         -c)
@@ -43,10 +43,10 @@ __bma ()
                         then
                                 builtin printf '%s\n' "$PWD" 1>&2
                         else
-                                builtin printf '%s\n' "error: could not cd into '$2'" 1>&2
+                                builtin printf 'error: could not cd into %s\n' "$2" 1>&2
                         fi
                 else
-                        builtin printf '%s\n' "error: bad arguments: '$*'" 1>&2
+                        builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
                 fi
         ;;
         -d)
@@ -61,17 +61,17 @@ __bma ()
                                 builtin hash -l \
                                 | command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE"
                         then
-                                builtin printf '%s\n' "removed '$2' (${p% *})" 1>&2
+                                builtin printf 'removed %s (%s)\n' "$2" "${p% *}" 1>&2
                         else
                                 builtin printf '%s\n' "index file seems to be empty now" 1>&2
                         fi
                 else
-                        builtin printf '%s\n' "error: could not remove '$2'" 1>&2
+                        builtin printf 'error: could not remove %s\n' "$2" 1>&2
                 fi
         ;;
         -i)
                 builtin source "$BMARKS_INDEX_FILE" || {
-                        builtin printf '%s\n' "error: could not source '$BMARKS_INDEX_FILE'" 1>&2
+                        builtin printf 'error: could not source %s\n' "$BMARKS_INDEX_FILE" 1>&2
                 }
         ;;
         -l)
@@ -106,7 +106,7 @@ Options
         -s                      Select bookmarks via the select compound command
                                 of GNU bash.
 HELP
-        builtin printf '%s\n' "$help"
+                builtin printf '%s\n' "$help"
         ;;
         *)
                 builtin printf '%s\n' "usage: __bma -[acdhilps]" 1>&2
