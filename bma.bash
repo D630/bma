@@ -6,12 +6,12 @@
 __bma ()
 {
         builtin typeset \
-                BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${$XDG_DATA_HOME}/bmarks.txt}
+                BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt}
 
         [[ -f $BMARKS_INDEX_FILE ]] || > "$BMARKS_INDEX_FILE" || builtin return 1
 
-        case $1 in
-        -a)
+        case ${1#-} in
+        a)
                 if
                         [[ -n $2 && -n $3 ]]
                 then
@@ -20,7 +20,8 @@ __bma ()
                         then
                                 if
                                         builtin hash -l \
-                                        | command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE"
+                                        | command fgrep '/.BMARKS ' \
+                                        > "$BMARKS_INDEX_FILE"
                                 then
                                         builtin printf 'added %s as %s \n' "$2" "$3" 1>&2
                                 else
@@ -33,7 +34,7 @@ __bma ()
                         builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
                 fi
         ;;
-        -c)
+        c)
                 if
                         [[ -n $2 ]]
                 then
@@ -49,7 +50,7 @@ __bma ()
                         builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
                 fi
         ;;
-        -d)
+        d)
                 if
                         builtin typeset p="$(
                                 __bma -p \
@@ -59,7 +60,8 @@ __bma ()
                 then
                         if
                                 builtin hash -l \
-                                | command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE"
+                                | command fgrep '/.BMARKS ' \
+                                > "$BMARKS_INDEX_FILE"
                         then
                                 builtin printf 'removed %s (%s)\n' "$2" "${p% *}" 1>&2
                         else
@@ -69,19 +71,19 @@ __bma ()
                         builtin printf 'error: could not remove %s\n' "$2" 1>&2
                 fi
         ;;
-        -i)
+        i)
                 builtin source "$BMARKS_INDEX_FILE" || {
                         builtin printf 'error: could not source %s\n' "$BMARKS_INDEX_FILE" 1>&2
                 }
         ;;
-        -l)
+        l)
                 builtin hash \
                 | command sed -n '/\/\.BMARKS$/ s/\/\.BMARKS$// p'
         ;;
-        -p)
+        p)
                 command sed -n 's/\/\.BMARKS//;s/builtin hash -p // p' "$BMARKS_INDEX_FILE"
         ;;
-        -s)
+        s)
                 builtin typeset \
                         PS3='cd -- ' \
                         i;
@@ -90,7 +92,7 @@ __bma ()
                         __bma -c "$i" && builtin break
                 done
         ;;
-        -h)
+        h)
                 { builtin typeset help="$(</dev/fd/0)" ; } <<'HELP'
 Usage
         __bma -[acdhilps]
@@ -106,7 +108,7 @@ Options
         -s                      Select bookmarks via the select compound command
                                 of GNU bash
 Environment variables
-        BMARKS_INDEX_FILE       default: ${$XDG_DATA_HOME}/bmarks.txt
+        BMARKS_INDEX_FILE       default: ${XDG_DATA_HOME}/bmarks.txt
 HELP
                 builtin printf '%s\n' "$help"
         ;;
