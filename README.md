@@ -1,6 +1,6 @@
 ##### README
 
-[bma](https://github.com/D630/bma) is a simple way to manage bookmarks of directories with the hash builtin command of GNU bash.
+[bma](https://github.com/D630/bma) manages bookmarks of directories via the hash builtin command of GNU bash.
 
 ##### BUGS & REQUESTS
 
@@ -100,9 +100,9 @@ bma has been written in [GNU bash](http://www.gnu.org/software/bash/) on [Debian
 
 - GNU bash 4.3.42(1)-release
 - GNU coreutils 8.23: sort
-- GNU grep 2.21
+- GNU grep 2.22
 - GNU sed 4.2.2
-- fzf 0.10.8
+- fzf 0.11.1
 
 ##### LICENCE
 
