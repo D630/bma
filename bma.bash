@@ -1,99 +1,85 @@
 #!/usr/bin/env bash
 
-# bma [GNU GPLv3]
-# https://github.com/D630/bma
+# bma
+# Copyright (C) 2015,2017 D630, GNU GPLv3
+# <https://github.com/D630/bma>
 
-__bma ()
-{
-        builtin typeset \
-                BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt}
+function __bma {
+	typeset \
+		BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt};
 
-        [[ -f $BMARKS_INDEX_FILE ]] || > "$BMARKS_INDEX_FILE" || builtin return 1
+	[[ -f $BMARKS_INDEX_FILE ]] ||
+		> "$BMARKS_INDEX_FILE" ||
+			return 1;
 
-        case ${1#-} in
-        a)
-                if
-                        [[ -n $2 && -n $3 ]]
-                then
-                        if
-                                builtin hash -p "${2}/.BMARKS" -- "$3"
-                        then
-                                if
-                                        builtin hash -l \
-                                        | command fgrep '/.BMARKS ' \
-                                        > "$BMARKS_INDEX_FILE"
-                                then
-                                        builtin printf 'added %s as %s \n' "$2" "$3" 1>&2
-                                else
-                                        builtin printf '%s\n' "error: could not update index file" 1>&2
-                                fi
-                        else
-                                builtin printf 'error: could not add %s\n' "$3" 1>&2
-                        fi
-                else
-                        builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
-                fi
-        ;;
-        c)
-                if
-                        [[ -n $2 ]]
-                then
-                        builtin typeset b="$(builtin hash -t "$2")"
-                        if
-                                builtin cd -- "${b%/.BMARKS}"
-                        then
-                                builtin printf 'cd -- %s\n' "$PWD" 1>&2
-                        else
-                                builtin printf 'error: could not cd into %s\n' "$2" 1>&2
-                        fi
-                else
-                        builtin printf 'error: bad arguments: %s\n' "$*" 1>&2
-                fi
-        ;;
-        d)
-                if
-                        builtin typeset p="$(
-                                __bma -p \
-                                | command grep " ${2}$"
-                        )"
-                        builtin hash -d "$2"
-                then
-                        if
-                                builtin hash -l \
-                                | command fgrep '/.BMARKS ' \
-                                > "$BMARKS_INDEX_FILE"
-                        then
-                                builtin printf 'removed %s (%s)\n' "$2" "${p% *}" 1>&2
-                        else
-                                builtin printf '%s\n' "index file seems to be empty now" 1>&2
-                        fi
-                else
-                        builtin printf 'error: could not remove %s\n' "$2" 1>&2
-                fi
-        ;;
-        i)
-                builtin source "$BMARKS_INDEX_FILE" || {
-                        builtin printf 'error: could not source %s\n' "$BMARKS_INDEX_FILE" 1>&2
-                }
-        ;;
-        l)
-                builtin hash \
-                | command sed -n '/\/\.BMARKS$/ s/\/\.BMARKS$// p'
-        ;;
-        p)
-                command sed -n 's/\/\.BMARKS//;s/builtin hash -p // p' "$BMARKS_INDEX_FILE"
-        ;;
-        s)
-                builtin typeset \
-                        PS3='cd -- ' \
-                        i;
-                select i in $(__bma -p | command sed 's/.* //' | command sort)
-                do
-                        __bma -c "$i" && builtin break
-                done
-        ;;
-        h)
-                { builtin typeset help="$(</dev/fd/0)" ; } <<'HELP'
+	case ${1#-} in
+		(a)
+			[[ -n $2 && -n $3 ]] || {
+				printf 'error: bad arguments: %s\n' "$*" 1>&2;
+				return 1;
+			};
+			hash -p "$2/.BMARKS" -- "$3" || {
+				printf 'error: could not add %s\n' "$3" 1>&2;
+				return 1;
+			};
+			if
+				hash -l |
+				command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE";
+			then
+				printf 'added %s as %s \n' "$2" "$3" 1>&2;
+			else
+				printf '%s\n' "error: could not update index file" 1>&2;
+				return 1;
+			fi;;
+		(c)
+			[[ -n $2 ]] || {
+				printf 'error: bad arguments: %s\n' "$*" 1>&2;
+				return 1;
+			};
+			typeset b=$(hash -t "$2");
+			if
+				builtin cd -- "${b%/.BMARKS}";
+			then
+				printf 'cd -- %s\n' "$PWD" 1>&2;
+			else
+				printf 'error: could not cd into %s\n' "$2" 1>&2;
+				return 1;
+			fi;;
+		(d)
+			typeset p=$(
+				__bma -p |
+				command grep " ${2}$";
+			);
+			hash -d "$2" || {
+				printf 'error: could not remove %s\n' "$2" 1>&2;
+				return 1;
+			};
+			if
+				hash -l |
+				command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE";
+			then
+				printf 'removed %s (%s)\n' "$2" "${p% *}" 1>&2;
+			else
+				printf '%s\n' "index file seems to be empty now" 1>&2;
+				return 1;
+			fi;;
+		(i)
+			. "$BMARKS_INDEX_FILE" ||
+				printf 'error: could not source %s\n' "$BMARKS_INDEX_FILE" 1>&2;;
+		(l)
+			hash |
+			command sed -n '/\/\.BMARKS$/ s/\/\.BMARKS$// p';;
+		(p)
+			command sed -n 's/\/\.BMARKS//;s/hash -p // p' "$BMARKS_INDEX_FILE";;
+		(s)
+			typeset \
+				PS3='cd -- ' \
+				i;
+			select i in $(__bma -p | command sed 's/.* //' | command sort); do
+				__bma -c "$i" && break;
+			done;;
+		(h)
+			{ typeset help=$(</dev/fd/0) ; } <<'HELP'
 Usage
         __bma -[acdhilps]
 
@@ -110,58 +96,56 @@ Options
 Environment variables
         BMARKS_INDEX_FILE       default: ${XDG_DATA_HOME}/bmarks.txt
 HELP
-                builtin printf '%s\n' "$help"
-        ;;
-        *)
-                builtin printf '%s\n' "usage: __bma -[acdhilps]" 1>&2
-        esac
-}
+			printf '%s\n' "$help";;
+		(*)
+			printf '%s\n' "usage: __bma -[acdhilps]" 1>&2;;
+	esac;
+};
 
-bcd ()
-{
-        builtin typeset dir
-        builtin read -r dir _ < <(
-                __bma -p \
-                | command fzf
-        )
+function bcd {
+	typeset dir;
+	read -r dir _ < <(
+		__bma -p |
+		command fzf;
+	);
 
-        if
-                [[ -d $dir ]]
-        then
-                builtin cd -- "$dir" && builtin printf 'cd -- %s\n' "$PWD" 1>&2
-        else
-                builtin printf '%s\n' "no dir has been chosen" 1>&2
-                builtin return 1
-        fi
-}
+	if
+		[[ -d $dir ]];
+	then
+		builtin cd -- "$dir" && printf 'cd -- %s\n' "$PWD" 1>&2;
+	else
+		printf '%s\n' "no dir has been chosen" 1>&2;
+		return 1;
+	fi;
+};
 
-builtin bind -x '"\C-xb": bcd'
+bind -x '"\C-xb": bcd';
 
-_bma_completion ()
-{
-        builtin typeset \
-                BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt} \
-                cur=${COMP_WORDS[COMP_CWORD]};
+function _bma_completion {
+	typeset \
+		BMARKS_INDEX_FILE=${BMARKS_INDEX_FILE:-${XDG_DATA_HOME}/bmarks.txt} \
+		cur=${COMP_WORDS[COMP_CWORD]};
 
-        builtin typeset -a dirs="()"
+	typeset -a dirs="()";
 
-        [[ -f $BMARKS_INDEX_FILE ]] || builtin return 1
+	[[ -f $BMARKS_INDEX_FILE ]] ||
+		return 1;
 
-        builtin mapfile -t dirs < <(
-                command sed 's/.* //' "$BMARKS_INDEX_FILE"
-        )
+	mapfile -t dirs < <(
+		command sed 's/.* //' "$BMARKS_INDEX_FILE"
+	);
 
-        builtin mapfile -t COMPREPLY < <(
-                builtin compgen -W '${dirs[@]}' -- "$cur"
-        )
+	mapfile -t COMPREPLY < <(
+		compgen -W '${dirs[@]}' -- "$cur"
+	);
 
-        builtin return 0
-}
+	return 0;
+};
 
-builtin complete -F _bma_completion -- __bma bma bb
+complete -F _bma_completion -- __bma bma bb;
 
-alias bb='__bma -c'
-alias bma=__bma
-alias bs='__bma -s'
+alias bb='\__bma -c';
+alias bma=\\__bma;
+alias bs='\__bma -s';
 
-# vim: set ts=8 sw=8 tw=0 et :
+# vim: set ts=4 sw=4 tw=0 noet :

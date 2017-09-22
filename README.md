@@ -1,10 +1,12 @@
 ##### README
 
-[bma](https://github.com/D630/bma) manages bookmarks of directories via the hash builtin command of GNU bash.
+[bma](https://github.com/D630/bma) manages bookmarks of directories via the
+hash builtin command of GNU bash.
 
 ##### BUGS & REQUESTS
 
-Please feel free to open an issue or put in a pull request on https://github.com/D630/bma
+Please feel free to open an issue or put in a pull request on
+https://github.com/D630/bma
 
 ##### GIT
 
@@ -36,7 +38,8 @@ The above line will setup:
 - one name completion for `__bma`, `bma` and `bb`
 - one empty BMARKS_INDEX_FILE
 
-bcd makes use of [fzf](https://github.com/junegunn/fzf). Modify it, when you do not wanna use it.
+bcd makes use of [fzf](https://github.com/junegunn/fzf). Modify it, when you do
+not wanna use it.
 
 ##### USAGE
 
@@ -90,19 +93,20 @@ index file seems to be empty now
 The index file looks like this:
 
 ```sh
-builtin hash -p /home/user1/.BMARKS home
-builtin hash -p /home/user1/tmp/.BMARKS tmp
+hash -p /home/user1/.BMARKS home
+hash -p /home/user1/tmp/.BMARKS tmp
 ```
 
 ##### NOTICE
 
-bma has been written in [GNU bash](http://www.gnu.org/software/bash/) on [Debian GNU/Linux 9 (stretch/sid)](https://www.debian.org) using these programs/packages:
+bma has been written in on [Debian GNU/Linux 9 (stretch/sid)](https://www.debian.org) [GNU bash 4.4.12(1)-release](http://www.gnu.org/software/bash/).
 
-- GNU bash 4.3.42(1)-release
-- GNU coreutils 8.23: sort
-- GNU grep 2.22
-- GNU sed 4.2.2
-- fzf 0.11.1
+bma needs also the following programs/packages:
+
+- GNU coreutils 8.26: sort
+- GNU grep 3.1
+- GNU sed 4.4
+- fzf 0.17.0 (optional)
 
 ##### LICENCE
 
