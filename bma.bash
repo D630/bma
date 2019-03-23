@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # bma
-# Copyright (C) 2015,2017 D630, GNU GPLv3
+# Copyright (C) 2015,2017,2019 D630, GNU GPLv3
 # <https://github.com/D630/bma>
 
 function __bma {
@@ -24,7 +24,7 @@ function __bma {
 			};
 			if
 				hash -l |
-				command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE";
+				command grep -F '/.BMARKS ' > "$BMARKS_INDEX_FILE";
 			then
 				printf 'added %s as %s \n' "$2" "$3" 1>&2;
 			else
@@ -37,14 +37,10 @@ function __bma {
 				return 1;
 			};
 			typeset b=$(hash -t "$2");
-			if
-				builtin cd -- "${b%/.BMARKS}";
-			then
-				printf 'cd -- %s\n' "$PWD" 1>&2;
-			else
+			builtin cd -- "${b%/.BMARKS}" || {
 				printf 'error: could not cd into %s\n' "$2" 1>&2;
 				return 1;
-			fi;;
+			};;
 		(d)
 			typeset p=$(
 				__bma -p |
@@ -56,7 +52,7 @@ function __bma {
 			};
 			if
 				hash -l |
-				command fgrep '/.BMARKS ' > "$BMARKS_INDEX_FILE";
+				command grep -F '/.BMARKS ' > "$BMARKS_INDEX_FILE";
 			then
 				printf 'removed %s (%s)\n' "$2" "${p% *}" 1>&2;
 			else
@@ -68,9 +64,9 @@ function __bma {
 				printf 'error: could not source %s\n' "$BMARKS_INDEX_FILE" 1>&2;;
 		(l)
 			hash |
-			command sed -n '/\/\.BMARKS$/ s/\/\.BMARKS$// p';;
+			command sed -n '/.\/\.BMARKS$/ s/\.BMARKS$// p';;
 		(p)
-			command sed -n 's/\/\.BMARKS//;s/hash -p // p' "$BMARKS_INDEX_FILE";;
+			command sed -n 's/hash -p //;s/\.BMARKS / / p' "$BMARKS_INDEX_FILE";;
 		(s)
 			typeset \
 				PS3='cd -- ' \
@@ -112,7 +108,7 @@ function bcd {
 	if
 		[[ -d $dir ]];
 	then
-		builtin cd -- "$dir" && printf 'cd -- %s\n' "$PWD" 1>&2;
+		builtin cd -- "$dir";
 	else
 		printf '%s\n' "no dir has been chosen" 1>&2;
 		return 1;
@@ -145,7 +141,7 @@ function _bma_completion {
 complete -F _bma_completion -- __bma bma bb;
 
 alias bb='\__bma -c';
-alias bma=\\__bma;
+alias bma='\__bma'
 alias bs='\__bma -s';
 
 # vim: set ts=4 sw=4 tw=0 noet :
